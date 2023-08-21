@@ -1,5 +1,5 @@
-#include "iostream"
-#include "glfw3.lib"
+#include <iostream>
+#include "glfw/glfw3.h"
 
 int main() {
     std::cout << "aid" << std::endl;
