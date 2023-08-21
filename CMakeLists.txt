@@ -6,14 +6,18 @@ project(opencraft
 
 
 
-add_executable(${PROJECT_NAME} src/main.cpp src/glad.c)
+file(GLOB_RECURSE SRC_FILES src/*.cpp src/*.h)
+
+add_executable(${PROJECT_NAME} ${SRC_FILES})
 
 add_subdirectory(external/glfw)
 
 target_include_directories(${PROJECT_NAME} 
+        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
         PUBLIC external/glfw/include
         PUBLIC external/includes
         )
 
 target_link_directories(${PROJECT_NAME} PRIVATE external/glfw/src)
 target_link_libraries(${PROJECT_NAME} glfw)
+
