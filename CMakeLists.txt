@@ -6,10 +6,14 @@ project(opencraft
 
 
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp src/glad.c)
 
 add_subdirectory(external/glfw)
 
-target_include_directories(${PROJECT_NAME} PUBLIC external/glfw/include)
+target_include_directories(${PROJECT_NAME} 
+        PUBLIC external/glfw/include
+        PUBLIC external/includes
+        )
+
 target_link_directories(${PROJECT_NAME} PRIVATE external/glfw/src)
-target_link_libraries(${PROJECT_NAME} glfw3)
+target_link_libraries(${PROJECT_NAME} glfw)
