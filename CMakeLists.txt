@@ -4,4 +4,9 @@ project(openCraft
         DESCRIPTION "An open source voxel based game inspired off Minecraft meant to bring back the beautiful beta and simplistic feeling of it"
         LANGUAGES CXX)
 
+
+
 add_executable(openCraftBinary main.cpp)
+
+find_library(GLFW glfw PATHS ${CMAKE_SOURCE_DIR})
+target_link_libraries(openCraftBinary PUBLIC ${GLFW})
