@@ -1,7 +1,8 @@
 #include <iostream>
 #include <glfw/glfw3.h>
+#include "test.h"
 
 int main() {
-    std::cout << "aid" << std::endl;
+    herro();
     return 1;
 }

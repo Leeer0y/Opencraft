@@ -13,7 +13,6 @@ add_executable(${PROJECT_NAME} ${SRC_FILES})
 add_subdirectory(external/glfw)
 
 target_include_directories(${PROJECT_NAME} 
-        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
         PUBLIC external/glfw/include
         PUBLIC external/includes
         )
