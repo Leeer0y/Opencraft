@@ -51,6 +51,10 @@ int main()
         // -----
         processInput(window);
 
+        // Rendering here
+        glClearColor(0.1f, 0.1f, 0.4f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
