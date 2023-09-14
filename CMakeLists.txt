@@ -8,7 +8,7 @@ project(opencraft
 
 
 
-file(GLOB_RECURSE SHADER_FILES shaders/*.vert shaders/*.frag)
+file(GLOB_RECURSE SHADER_FILES resources/*.vert resources/*.frag)
 file(GLOB_RECURSE SRC_FILES src/*.cpp src/*.h) # Doesnt get c files
 
 add_executable(${PROJECT_NAME} ${SHADER_FILES} ${SRC_FILES} src/glad.c)
@@ -29,3 +29,10 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC RESOURCES_PATH="${CMAKE_
 target_link_directories(${PROJECT_NAME} PRIVATE external/glfw/src ${o})
 target_link_libraries(${PROJECT_NAME} glfw)
 
+
+if(MSVC) #using the visual studio compiler
+        set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}) # Set the project as the startup project by defualt instead of ALL BUILD
+
+        source_group("Resources") # Directory for resources
+        source_group("Resources/Shaders" FILES ${SHADER_FILES}) # Subdir for shaders
+endif()
