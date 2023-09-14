@@ -8,9 +8,10 @@ project(opencraft
 
 
 
+file(GLOB_RECURSE SHADER_FILES shaders/*.vert shaders/*.frag)
 file(GLOB_RECURSE SRC_FILES src/*.cpp src/*.h) # Doesnt get c files
 
-add_executable(${PROJECT_NAME} ${SRC_FILES} src/glad.c)
+add_executable(${PROJECT_NAME} ${SHADER_FILES} ${SRC_FILES} src/glad.c)
 
 add_subdirectory(external/glfw)
 
@@ -18,6 +19,9 @@ target_include_directories(${PROJECT_NAME}
         PUBLIC external/glfw/include
         PUBLIC external/includes
 )
+
+target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/resources/") # adds a macro so RESOURCES_PATH points to the resources folder
+#target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC RESOURCES_PATH="./resources/") # for compiling a relase version, move resources into final directory
 
 #message(STATUS "<<${OPENGL_INCLUDE_DIRS}>>")
 # This will print <<>> because OPENGL_INCLUDE_DIRS is empty.
