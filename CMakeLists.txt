@@ -14,10 +14,12 @@ file(GLOB_RECURSE SRC_FILES src/*.cpp src/*.h) # Doesnt get c files
 add_executable(${PROJECT_NAME} ${SHADER_FILES} ${SRC_FILES} src/glad.c)
 
 add_subdirectory(external/glfw)
+add_subdirectory(external/glm)
 
 target_include_directories(${PROJECT_NAME} 
         PUBLIC external/glfw/include
         PUBLIC external/includes
+        PUBLIC external/glm
 )
 
 target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/resources/") # adds a macro so RESOURCES_PATH points to the resources folder
@@ -28,6 +30,7 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC RESOURCES_PATH="${CMAKE_
 
 target_link_directories(${PROJECT_NAME} PRIVATE external/glfw/src ${o})
 target_link_libraries(${PROJECT_NAME} glfw)
+target_link_libraries(${PROJECT_NAME} glm)
 
 
 if(MSVC) #using the visual studio compiler
