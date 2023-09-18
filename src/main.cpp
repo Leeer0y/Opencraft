@@ -6,6 +6,9 @@
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "stb_image.h"
+
+#include <vector>
 
 #include "shader.h"
 
@@ -53,8 +56,8 @@ int main()
     // Configure global opengl state
     glEnable(GL_DEPTH_TEST);
 
-
-    Shader ourShader(RESOURCES_PATH "baseCube.vert", RESOURCES_PATH "test.frag");
+    // Shader init
+    Shader ourShader(RESOURCES_PATH "baseCube.vert", RESOURCES_PATH "baseCube.frag");
 
     //glUseProgram(shaderProgram);
 
@@ -68,39 +71,63 @@ int main()
     }; 
 
     // cube verticies
+    /*
     glm::vec3 cubeVerticies[] = {
         // front
-        glm::vec3(-0.5, -0.5, 0.5), // 1
-        glm::vec3(-0.5, 0.5, 0.5), // 2
-        glm::vec3(0.5, 0.5, 0.5), // 3
-        glm::vec3(0.5, -0.5, 0.5), // 4
+        glm::vec3(-0.5, -0.5, 0.5), // 0
+        glm::vec3(-0.5, 0.5, 0.5), // 1
+        glm::vec3(0.5, 0.5, 0.5), // 2
+        glm::vec3(0.5, -0.5, 0.5), // 3
         // back
-        glm::vec3(-0.5, -0.5, -0.5), // 5
-        glm::vec3(-0.5, 0.5, -0.5), // 6
-        glm::vec3(0.5, 0.5, -0.5), // 7
-        glm::vec3(0.5, -0.5, -0.5) // 8
+        glm::vec3(-0.5, -0.5, -0.5), // 4
+        glm::vec3(-0.5, 0.5, -0.5), // 5
+        glm::vec3(0.5, 0.5, -0.5), // 6
+        glm::vec3(0.5, -0.5, -0.5) // 7
+    }; */
+
+    float cubeVerticies[] = {
+        // Positions            // Tex coords
+        // front
+        -0.5f, -0.5f, 0.5f,     0.0f, 0.0f, // 0
+        -0.5f, 0.5f, 0.5f,      0.0f, 1.0f, // 1
+        0.5f, 0.5f, 0.5f,       1.0f, 1.0f, // 2
+        0.5f, -0.5f, 0.5f,      1.0f, 0.0f, // 3
+        // back
+        -0.5f, -0.5f, -0.5f,    1.0f, 0.0f, // 4
+        -0.5f, 0.5f, -0.5f,     1.0f, 1.0f, // 5
+        0.5f, 0.5f, -0.5f,      0.0f, 1.0f, // 6
+        0.5f, -0.5f, -0.5f,     0.0f, 0.0f,  // 7
+        // top
+        0.5f, 0.5f, 0.5f,       0.0f, 0.0f, // 8 (2)
+        -0.5f, 0.5f, 0.5f,      1.0f, 0.0f, // 9 (1)
+        // bottom
+        0.5f, -0.5f, -0.5f,     1.0f, 1.0f,  // 10 (7)
+        -0.5f, -0.5f, -0.5f,    0.0f, 1.0f // 11 (4)
     };
+
 
     unsigned int indicies[] = {
         // front face
         0, 1, 2,
-        0, 2, 3,
+        2, 3, 0,
         // back face
         4, 5, 6,
-        6, 7, 6,
+        6, 7, 4,
         // left face
         4, 5, 1,
-        0, 4, 1,
+        1, 0, 4,
         // right face
-        3, 7, 2,
-        6, 2, 7,
+        7, 6, 2,
+        2, 3, 7,
         // top face
-        1, 6, 2,
-        1, 5, 6,
+        9, 5, 6,
+        6, 8, 9,
         // bottom face
-        0, 4, 7,
-        3, 0, 7
+        0, 11, 10,
+        10, 3, 0
     };
+
+    // Buffers
 
     unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
@@ -115,12 +142,36 @@ int main()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+    // Textures
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    int width, height, nrChannels;
+    unsigned char* data = stbi_load(RESOURCES_PATH "test.jpg", &width, &height, &nrChannels, 0);
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
 
     // render loop
     // -----------
@@ -151,9 +202,11 @@ int main()
         ourShader.setMat4("projection", projection);
 
         // render container
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
         glBindVertexArray(VAO);
         //glDrawArrays(GL_TRIANGLES, 0, 3);
-        glDrawElements(GL_TRIANGLES, 72, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
