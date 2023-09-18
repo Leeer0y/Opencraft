@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "shader.h"
+#include "texture.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -152,26 +153,10 @@ int main()
     glBindVertexArray(0);
 
     // Textures
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    int width, height, nrChannels;
-    unsigned char* data = stbi_load(RESOURCES_PATH "test.jpg", &width, &height, &nrChannels, 0);
-    if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
+    Texture grassTop(GL_TEXTURE_2D, RESOURCES_PATH "grass_top.jpg");
+    Texture dirt(GL_TEXTURE_2D, RESOURCES_PATH "dirt.png", 4);
+    grassTop.Load();
+    dirt.Load();
 
     // render loop
     // -----------
@@ -202,12 +187,21 @@ int main()
         ourShader.setMat4("projection", projection);
 
         // render container
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glBindVertexArray(VAO);
-        //glDrawArrays(GL_TRIANGLES, 0, 3);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
+        
+        // for each side of cube
+        for (int i = 0; i <= 6; i++) {
+            if (i == 5) {
+                grassTop.BindTexture(GL_TEXTURE0);
+            }
+            else {
+                dirt.BindTexture(GL_TEXTURE0);
+            }
+            glBindVertexArray(VAO);
+            glDrawElements(GL_TRIANGLES, 6*i, GL_UNSIGNED_INT, 0);
+            glBindVertexArray(0);
+        }
+
+
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
