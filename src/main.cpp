@@ -2,6 +2,8 @@
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
 
+#include "settings.h"
+
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -12,17 +14,17 @@
 
 #include "shader.h"
 #include "texture.h"
+#include "camera.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 
-// settings
-unsigned int SCR_WIDTH = 800;
-unsigned int SCR_HEIGHT = 600;
-
+// Settings
+Settings settings;
 
 int main()
 {
+
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -36,7 +38,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(settings.g_scrWidth, settings.g_scrHeight, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -158,6 +160,9 @@ int main()
     grassTop.Load();
     dirt.Load();
 
+    // Camera
+    Camera cam(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -173,18 +178,14 @@ int main()
         ourShader.use();
 
         // Create transformations
+        cam.SetProjection(&ourShader, settings.g_fov, settings.g_scrWidth / settings.g_scrHeight, 0.1f, 100.0f);
+        cam.CalculateViewMatrix(&ourShader);
+
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-
-        glm::mat4 view = glm::mat4(1.0f);
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
-        glm::mat4 projection;
-        projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f); // aspect ratio will be messed up upon resize, SCR_WIDTH and SCR_HEIGHT are constant.
-
+        //model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
         ourShader.setMat4("model", model);
-        ourShader.setMat4("view", view);
-        ourShader.setMat4("projection", projection);
+
+
 
         // render container
         
@@ -236,6 +237,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
-    SCR_WIDTH = width;
-    SCR_HEIGHT = height;
+    settings.g_scrWidth = width;
+    settings.g_scrHeight = height;
 }
