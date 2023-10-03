@@ -18,3 +18,20 @@ void Camera::CalculateViewMatrix(Shader* shader) {
 	shader->setMat4("view", m_view);
 }
 
+void Camera::SetPosition(glm::vec3 pos) {
+	m_cameraPos = pos;
+}
+
+glm::vec3 Camera::GetPosition() {
+	return m_cameraPos;
+}
+
+glm::vec3 Camera::GetFront() {
+	return m_cameraFront;
+}
+
+glm::vec3 Camera::GetUp() {
+	return m_cameraUp;
+}
+
+

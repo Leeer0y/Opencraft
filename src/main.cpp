@@ -22,6 +22,13 @@ void processInput(GLFWwindow* window);
 // Settings
 Settings settings;
 
+// Camera
+Camera cam(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+
+// Timing
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
 int main()
 {
 
@@ -160,13 +167,15 @@ int main()
     grassTop.Load();
     dirt.Load();
 
-    // Camera
-    Camera cam(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        float currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         // input
         // -----
         processInput(window);
@@ -226,8 +235,19 @@ int main()
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window)
 {
+    float cameraSpeed = static_cast<float>(2.5 * deltaTime);
+
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        cam.SetPosition(cam.GetPosition() + cameraSpeed * cam.GetFront());
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        cam.SetPosition(cam.GetPosition() - cameraSpeed * cam.GetFront());
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        cam.SetPosition(cam.GetPosition() - (glm::normalize(glm::cross(cam.GetFront(), cam.GetUp())) * cameraSpeed));
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        cam.SetPosition(cam.GetPosition() + (glm::normalize(glm::cross(cam.GetFront(), cam.GetUp())) * cameraSpeed));
+
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

@@ -11,11 +11,15 @@
 
 class Camera {
 public:
-	float cameraSpeed;
-
 	Camera(glm::vec3 pos, glm::vec3 dir);
 	void SetProjection(Shader* shader, float fov, float aspect, float near, float far);
 	void CalculateViewMatrix(Shader* shader);
+	void SetPosition(glm::vec3 pos);
+
+	glm::vec3 GetPosition();
+	glm::vec3 GetFront();
+	glm::vec3 GetUp();
+
 
 private:
 	glm::vec3 m_cameraPos;
