@@ -4,14 +4,14 @@ cmake_minimum_required(VERSION 3.22.1)
 project(opencraft
         VERSION 0.0.1
         DESCRIPTION "An open source voxel based game inspired off Minecraft meant to bring back the beautiful beta and simplistic feeling of it"
-        LANGUAGES CXX)
+        LANGUAGES CXX C)
 
 
 
 file(GLOB_RECURSE SHADER_FILES resources/*.vert resources/*.frag)
-file(GLOB_RECURSE SRC_FILES src/*.cpp src/*.h) # Doesnt get c files
+file(GLOB_RECURSE SRC_FILES src/*.cpp src/*.h src/*.c) # Doesnt get c files
 
-add_executable(${PROJECT_NAME} ${SHADER_FILES} ${SRC_FILES} src/glad.c)
+add_executable(${PROJECT_NAME} ${SHADER_FILES} ${SRC_FILES})
 
 add_subdirectory(external/glfw)
 add_subdirectory(external/glm)
