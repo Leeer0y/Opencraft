@@ -15,6 +15,7 @@ public:
 	void SetProjection(Shader* shader, float fov, float aspect, float near, float far);
 	void CalculateViewMatrix(Shader* shader);
 	void SetPosition(glm::vec3 pos);
+	void SetDir(glm::vec3 front); // normilizes a direction vector
 
 	glm::vec3 GetPosition();
 	glm::vec3 GetFront();

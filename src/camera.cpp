@@ -22,6 +22,10 @@ void Camera::SetPosition(glm::vec3 pos) {
 	m_cameraPos = pos;
 }
 
+void Camera::SetDir(glm::vec3 front) {
+	m_cameraFront = glm::normalize(front);
+}
+
 glm::vec3 Camera::GetPosition() {
 	return m_cameraPos;
 }
