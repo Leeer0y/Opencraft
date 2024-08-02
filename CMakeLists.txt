@@ -14,4 +14,7 @@ file(GLOB_RECURSE SRC_FILES src/*.cpp src/*.c src/*.h)
 add_executable(${PROJECT_NAME} ${SRC_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC external/includes)
 
+target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/resources/")
+target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC SHADERS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/shaders/")
+
 target_link_libraries(${PROJECT_NAME} glfw OpenGL::GL)

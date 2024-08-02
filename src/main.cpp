@@ -1,9 +1,14 @@
+#ifndef SHADERS_PATH
+#define SHADERS_PATH "/"
+#endif
+
 #include <iostream>
 
 // GLAD
 #include <glad/gl.h>
 
 // GLFW (include after glad)
+#include "shader.h"
 #include <GLFW/glfw3.h>
 
 // This example is taken from http://learnopengl.com/
@@ -22,22 +27,6 @@ const GLuint WIDTH = 800, HEIGHT = 600;
 
 // Triangle Verticies
 float verticies[] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f};
-
-// Shaders
-const char *vertexShaderSource =
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-const char *fragmentShaderSource =
-    "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n\0";
 
 // The MAIN function, from here we start the application and run the game loop
 int main() {
@@ -77,50 +66,9 @@ int main() {
   // Define the viewport dimensions
   glViewport(0, 0, WIDTH, HEIGHT);
 
-  // Build and compile Shaders
-  // ------------------------
-  // Vertex Shaders
-  unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-  glCompileShader(vertexShader);
-  // check shader for compile errors
-  int success;
-  char infolog[512];
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(vertexShader, 512, NULL, infolog);
-    std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
-              << infolog << std::endl;
-  }
-
-  // Fragment Shaders
-  unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-  glCompileShader(fragmentShader);
-
-  // check for compile errors
-  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(fragmentShader, 512, NULL, infolog);
-    std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED" << infolog
-              << std::endl;
-  }
-
-  // link Shaders
-  unsigned int shaderProgram = glCreateProgram();
-  glAttachShader(shaderProgram, vertexShader);
-  glAttachShader(shaderProgram, fragmentShader);
-  glLinkProgram(shaderProgram);
-  // check for linking errors
-  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-  if (!success) {
-    glGetProgramInfoLog(shaderProgram, 512, NULL, infolog);
-    std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n"
-              << infolog << std::endl;
-  }
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
-
+  // Shaders
+  Shader ourShader(SHADERS_PATH "test.vert", SHADERS_PATH "test.frag");
+  std::cout << SHADERS_PATH "test.vert" << std::endl;
   // Setup vertex data and buffers and config vertex attributes
   //
 
@@ -157,7 +105,7 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     // draw Triangle
-    glUseProgram(shaderProgram);
+    ourShader.use();
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
